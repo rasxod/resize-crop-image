@@ -1,14 +1,12 @@
 <?
 /*
-    CMS 		: SmartEscortGallery
+    CMS 	: ForAll
     Created on 	: 24-10-2014
-    Author 		: Goncharov S.
+    Author	: Goncharov S.
     Document 	: getimage.inc.php
     Company 	: Ssmart Lab.
-    Site 		: ssmart.ru
+    Site 	: ssmart.ru
 */
-
-include $_SERVER['DOCUMENT_ROOT']."/settings/general.php";
 
 function myImage($resImg, $outImg, $w, $h) {
 	$sub = array();
@@ -34,35 +32,32 @@ function myImage($resImg, $outImg, $w, $h) {
 		$w_o = $h;
 		$h_o = $w;
 	}
+	//проверям, вдруг изображение изначально меньше нам нужного
 	if ($w_i < $w_o || $h_i < $h_o) {
 		echo 'некорректный размер файла';
 		return $err = '=3=';
 	}
 
-	//вычисляем сторону по которой будем уменьшать
+	//вычисляем стороны и сдвиги
 	function bigStorona($w_o, $h_o, $w_i, $h_i){
-		// 700*900
-		// 200/700=0,28571429
-		// 300*0,28571429=85,714287
 		$new_out_size = array();
 		$Pr = $w_o/$w_i;
 		$new_out_size[w] = $w_o;
-		$new_out_size[h] = $h_i*$Pr;
+		$new_out_size[h] = $h_i*$Pr; //высота получится больше чем надо
 		$new_out_size[x] = 0;
-		$new_out_size[y] = ($new_out_size[h]-$h_o)/2;
+		$new_out_size[y] = ($new_out_size[h]-$h_o)/2; //сдвиг по y
 		if ($new_out_size[h] < $h_o) {
 			$Pr = $h_o/$h_i;
-			$new_out_size[w] = $w_i*$Pr;
+			$new_out_size[w] = $w_i*$Pr; //ширина получится больше чем надо
 			$new_out_size[h] = $h_o;
-			$new_out_size[x] = ($new_out_size[w]-$w_o)/2;
+			$new_out_size[x] = ($new_out_size[w]-$w_o)/2; //сдвиг по x
 			$new_out_size[y] = 0;
 		}
-		print_r($new_out_size);
+		
 		return $new_out_size;
 	}
 	$outSize = bigStorona($w_o, $h_o, $w_i, $h_i);
 	// ресэмплирование
-	// print_r($outSize);
 	$image_o = imagecreatetruecolor($w_o, $h_o);
 	$image = imagecreatefromjpeg($resImg);
 	imagecopyresampled($image_o, $image, 0, 0, $outSize['x'], $outSize['y'], $outSize['w'], $outSize['h'], $w_i, $h_i);
@@ -74,27 +69,11 @@ function myImage($resImg, $outImg, $w, $h) {
 
 
 // пример вызова
-// myImage('crop', '200', 200, $SiteRow);
-if ($act == 'updMainImg') {
-	//выбираем фотографии для данной галереи которую добавили для сайта
-	//"SELECT * FROM sitePhotos WHERE id=".$_GET['id']." AND lastUpDate > '". $SiteRow."'"
-	$allMainPhotos = $DB->select("SELECT sG.gName, sP.* 
-									FROM siteGallery AS sG 
-									LEFT JOIN sitePhotos AS sP 
-										ON sP.sGalleryId = sG.id 
-										WHERE sG.sitesID = ".$_GET['id']." 
-										AND sP.lastUpDate > '".$SiteRow['lastUpDate']."' 
-										AND spMain = '1'");
-	// echo "SELECT sG.gName, sP.* 
-	// 								FROM siteGallery AS sG 
-	// 								LEFT JOIN sitePhotos AS sP 
-	// 									ON sP.sGalleryId = sG.id 
-	// 									WHERE sG.sitesID = ".$_GET['id']." 
-	// 									AND sP.lastUpDate > '".$SiteRow['lastUpDate']."' 
-	// 									AND spMain = '1'";
-	foreach ($allMainPhotos as $key => $aMP) {
-		echo $_SERVER['DOCUMENT_ROOT'].$aMP['pAdress'].", ".$_SERVER['DOCUMENT_ROOT'].$aMP['mainCash'].", '200', '300' <br />";
-		print_r(myImage($_SERVER['DOCUMENT_ROOT'].$aMP['pAdress'], $_SERVER['DOCUMENT_ROOT'].$aMP['mainCash'], '200', '300'));
-	}
-}
+/*
+$resImg - адрес исходного изображения
+$outImg - адрес результирующего изображения
+$w - ширина которая вам нужна
+$h - высота которая вам нужна
+*/
+myImage($resImg, $outImg, $w, $h);
 ?>
