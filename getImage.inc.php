@@ -13,7 +13,7 @@ function myImage($resImg, $outImg, $w, $h) {
 	list($w_i, $h_i, $type) = getimagesize($resImg);
 	if (!$w_i || !$h_i) {
 		echo 'Невозможно получить длину и ширину изображения';
-		return$err = '=1=';
+		return$err = '1';
 	}
 	$types = array('','gif','jpeg','png');
 	$ext = $types[$type];
@@ -22,7 +22,7 @@ function myImage($resImg, $outImg, $w, $h) {
 		$img = $func($resImg);
 	} else {
 		echo 'Некорректный формат файла';
-		return $err = '=2=';
+		return $err = '2';
 	}
 	//определяем ориентацию
 	if ($w_i < $h_i) {
@@ -35,31 +35,27 @@ function myImage($resImg, $outImg, $w, $h) {
 	//проверям, вдруг изображение изначально меньше нам нужного
 	if ($w_i < $w_o || $h_i < $h_o) {
 		echo 'некорректный размер файла';
-		return $err = '=3=';
+		return $err = '3';
 	}
 
 	//вычисляем стороны и сдвиги
-	function bigStorona($w_o, $h_o, $w_i, $h_i){
-		$new_out_size = array();
-		$Pr = $w_o/$w_i;
-		$new_out_size[w] = $w_o;
-		$new_out_size[h] = $h_i*$Pr; //высота получится больше чем надо
-		$new_out_size[x] = 0;
-		$new_out_size[y] = ($new_out_size[h]-$h_o)/2; //сдвиг по y
-		if ($new_out_size[h] < $h_o) {
-			$Pr = $h_o/$h_i;
-			$new_out_size[w] = $w_i*$Pr; //ширина получится больше чем надо
-			$new_out_size[h] = $h_o;
-			$new_out_size[x] = ($new_out_size[w]-$w_o)/2; //сдвиг по x
-			$new_out_size[y] = 0;
-		}
-		
-		return $new_out_size;
+	$outSize = array();
+	$Pr = $w_o/$w_i;
+	$outSize[w] = $w_o;
+	$outSize[h] = $h_i*$Pr; //высота получится больше чем надо
+	$outSize[x] = 0;
+	$outSize[y] = ($outSize[h]-$h_o)/2; //сдвиг по y
+	if ($outSize[h] < $h_o) {
+		$Pr = $h_o/$h_i;
+		$outSize[w] = $w_i*$Pr; //ширина получится больше чем надо
+		$outSize[h] = $h_o;
+		$outSize[x] = ($outSize[w]-$w_o)/2; //сдвиг по x
+		$outSize[y] = 0;
 	}
-	$outSize = bigStorona($w_o, $h_o, $w_i, $h_i);
+
 	// ресэмплирование
 	$image_o = imagecreatetruecolor($w_o, $h_o);
-	$image = imagecreatefromjpeg($resImg);
+	$image = $img;
 	imagecopyresampled($image_o, $image, 0, 0, $outSize['x'], $outSize['y'], $outSize['w'], $outSize['h'], $w_i, $h_i);
 	imagejpeg($image_o,$outImg,100);
 	
