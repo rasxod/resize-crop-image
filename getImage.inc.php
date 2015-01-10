@@ -9,11 +9,11 @@
 */
 
 function myImage($resImg, $outImg, $w, $h) {
-	$sub = array();
+	//$sub = array();
 	list($w_i, $h_i, $type) = getimagesize($resImg);
 	if (!$w_i || !$h_i) {
-		echo 'Невозможно получить длину и ширину изображения';
-		return$err = '1';
+		//echo 'Невозможно получить длину и ширину изображения';
+		return $err = '1';
 	}
 	$types = array('','gif','jpeg','png');
 	$ext = $types[$type];
@@ -21,7 +21,7 @@ function myImage($resImg, $outImg, $w, $h) {
 		$func = 'imagecreatefrom'.$ext;
 		$img = $func($resImg);
 	} else {
-		echo 'Некорректный формат файла';
+		//echo 'Некорректный формат файла';
 		return $err = '2';
 	}
 	//определяем ориентацию
@@ -40,13 +40,13 @@ function myImage($resImg, $outImg, $w, $h) {
 
 	//вычисляем стороны и сдвиги
 	$outSize = array();
-	$Pr = $w_o/$w_i;
+	$Pr = round($w_o/$w_i, 4);
 	$outSize[w] = $w_o;
 	$outSize[h] = $h_i*$Pr; //высота получится больше чем надо
 	$outSize[x] = 0;
 	$outSize[y] = ($outSize[h]-$h_o)/2; //сдвиг по y
 	if ($outSize[h] < $h_o) {
-		$Pr = $h_o/$h_i;
+		$Pr = round($h_o/$h_i, 4);
 		$outSize[w] = $w_i*$Pr; //ширина получится больше чем надо
 		$outSize[h] = $h_o;
 		$outSize[x] = ($outSize[w]-$w_o)/2; //сдвиг по x
@@ -54,12 +54,13 @@ function myImage($resImg, $outImg, $w, $h) {
 	}
 
 	// ресэмплирование
-	$image_o = imagecreatetruecolor($w_o, $h_o);
 	$image = $img;
+	$image_o = imagecreatetruecolor($w_o, $h_o);
 	imagecopyresampled($image_o, $image, 0, 0, $outSize['x'], $outSize['y'], $outSize['w'], $outSize['h'], $w_i, $h_i);
 	imagejpeg($image_o,$outImg,100);
+	unset($image_o, $image);
 	
-	return $err = $outImg.' =0=';
+	return $err = 0;
 }
 
 
