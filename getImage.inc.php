@@ -59,7 +59,7 @@ function myImage($resImg, $outImg, $w, $h) {
 	imagecopyresampled($image_o, $image, 0, 0, $outSize['x'], $outSize['y'], $outSize['w'], $outSize['h'], $w_i, $h_i);
 	imagejpeg($image_o,$outImg,100);
 	
-	return $err = '0';
+	return $err = $outImg.' =0=';
 }
 
 
